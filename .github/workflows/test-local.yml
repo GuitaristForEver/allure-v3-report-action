@@ -12,6 +12,8 @@ jobs:
   test-action:
     name: Test Allure v3 Action
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
