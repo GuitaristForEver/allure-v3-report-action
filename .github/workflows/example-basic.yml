@@ -1,0 +1,47 @@
+name: Example - Basic Usage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-basic:
+    name: Basic Allure Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test results
+        run: |
+          mkdir -p allure-results
+          cat > allure-results/basic-test.json << 'EOF'
+          {
+            "uuid": "basic-test-1",
+            "name": "Basic Test Example",
+            "status": "passed",
+            "stage": "finished",
+            "start": 1704067200000,
+            "stop": 1704067210000
+          }
+          EOF
+
+      - name: Get history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate report
+        uses: ./
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history

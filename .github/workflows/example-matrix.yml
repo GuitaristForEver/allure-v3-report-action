@@ -1,0 +1,66 @@
+name: Example - Matrix Strategy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-matrix:
+    name: Test on ${{ matrix.os }} - Node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [18, 20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Create test results
+        run: |
+          mkdir -p allure-results
+          cat > allure-results/test-${{ matrix.os }}-node${{ matrix.node }}.json << 'EOF'
+          {
+            "uuid": "${{ matrix.os }}-node${{ matrix.node }}",
+            "name": "Test on ${{ matrix.os }} with Node ${{ matrix.node }}",
+            "status": "passed",
+            "stage": "finished",
+            "start": 1704067200000,
+            "stop": 1704067210000,
+            "labels": [
+              {"name": "os", "value": "${{ matrix.os }}"},
+              {"name": "node", "value": "${{ matrix.node }}"}
+            ]
+          }
+          EOF
+        shell: bash
+
+      - name: Get history
+        uses: actions/checkout@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate report
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+        uses: ./
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          subfolder: matrix-tests
+          report_name: Matrix Test Results
+
+      - name: Deploy
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
