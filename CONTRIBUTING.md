@@ -65,19 +65,61 @@ docker run --rm \
 
 ## Commit Message Guidelines
 
-Follow Conventional Commits:
+We use **Conventional Commits** for automated semantic versioning and changelog generation.
 
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation changes
-- `test:` Adding or updating tests
-- `chore:` Maintenance tasks
-- `refactor:` Code refactoring
+### Format
 
-Examples:
-- `feat: add support for custom Allure plugins`
-- `fix: history not preserved with subfolder`
-- `docs: update README with new examples`
+```
+<type>[(scope)]: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types and Version Bumps
+
+- **`feat:`** - New feature → **Minor version bump** (1.0.0 → 1.1.0)
+- **`fix:`** - Bug fix → **Patch version bump** (1.0.0 → 1.0.1)
+- **`feat!:`** or **`fix!:`** or `BREAKING CHANGE:` → **Major version bump** (1.0.0 → 2.0.0)
+- **`docs:`** - Documentation (no version bump, appears in changelog)
+- **`perf:`** - Performance improvement (patch bump)
+- **`refactor:`** - Code refactoring (no version bump, hidden from changelog)
+- **`test:`** - Tests (no version bump, hidden from changelog)
+- **`chore:`** - Maintenance (no version bump, hidden from changelog)
+- **`build:`** - Build system (no version bump, hidden from changelog)
+- **`ci:`** - CI/CD changes (no version bump, hidden from changelog)
+
+### Examples
+
+**Feature (minor bump):**
+```bash
+git commit -m "feat: add support for custom Allure plugins
+
+Allows users to load custom Allure plugins via the plugins_path input"
+```
+
+**Bug Fix (patch bump):**
+```bash
+git commit -m "fix: history not preserved with subfolder configuration
+
+Fixes issue where history was lost when using subfolder parameter"
+```
+
+**Breaking Change (major bump):**
+```bash
+git commit -m "feat!: redesign input parameters
+
+BREAKING CHANGE: Renamed allure_results to results_path for clarity.
+Users must update their workflows to use the new parameter name."
+```
+
+**Documentation (no bump):**
+```bash
+git commit -m "docs: update README with new examples"
+```
+
+📖 **See [docs/RELEASES.md](docs/RELEASES.md) for complete release management documentation.**
 
 ## Testing
 
