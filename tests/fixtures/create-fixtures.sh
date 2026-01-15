@@ -9,7 +9,7 @@ mkdir -p "$OUTPUT_DIR"
 echo "Creating comprehensive Allure test fixtures..."
 
 # 1. Simple passing test
-cat > "$OUTPUT_DIR/test-pass-simple.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-pass-simple-result.json" << 'EOF'
 {
   "uuid": "test-001",
   "name": "Simple passing test",
@@ -26,7 +26,7 @@ cat > "$OUTPUT_DIR/test-pass-simple.json" << 'EOF'
 EOF
 
 # 2. Failing test with stack trace
-cat > "$OUTPUT_DIR/test-fail-with-trace.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-fail-with-trace-result.json" << 'EOF'
 {
   "uuid": "test-002",
   "name": "Failing test with detailed trace",
@@ -48,7 +48,7 @@ cat > "$OUTPUT_DIR/test-fail-with-trace.json" << 'EOF'
 EOF
 
 # 3. Skipped test
-cat > "$OUTPUT_DIR/test-skip.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-skip-result.json" << 'EOF'
 {
   "uuid": "test-003",
   "name": "Skipped test - pending implementation",
@@ -68,7 +68,7 @@ cat > "$OUTPUT_DIR/test-skip.json" << 'EOF'
 EOF
 
 # 4. Test with parameters
-cat > "$OUTPUT_DIR/test-parameterized.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-parameterized-result.json" << 'EOF'
 {
   "uuid": "test-004",
   "name": "Parameterized test [user=admin, role=superuser]",
@@ -89,7 +89,7 @@ cat > "$OUTPUT_DIR/test-parameterized.json" << 'EOF'
 EOF
 
 # 5. Test with attachment reference
-cat > "$OUTPUT_DIR/test-with-attachment.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-with-attachment-result.json" << 'EOF'
 {
   "uuid": "test-005",
   "name": "Test with screenshot attachment",
@@ -116,7 +116,7 @@ cat > "$OUTPUT_DIR/test-with-attachment.json" << 'EOF'
 EOF
 
 # 6. Long-running test
-cat > "$OUTPUT_DIR/test-long-running.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-long-running-result.json" << 'EOF'
 {
   "uuid": "test-006",
   "name": "Long-running integration test",
@@ -134,7 +134,7 @@ cat > "$OUTPUT_DIR/test-long-running.json" << 'EOF'
 EOF
 
 # 7. Broken test (invalid status)
-cat > "$OUTPUT_DIR/test-broken.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-broken-result.json" << 'EOF'
 {
   "uuid": "test-007",
   "name": "Broken test - setup failed",
@@ -154,7 +154,7 @@ cat > "$OUTPUT_DIR/test-broken.json" << 'EOF'
 EOF
 
 # 8. Test with steps
-cat > "$OUTPUT_DIR/test-with-steps.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-with-steps-result.json" << 'EOF'
 {
   "uuid": "test-008",
   "name": "Test with multiple steps",
@@ -194,7 +194,7 @@ cat > "$OUTPUT_DIR/test-with-steps.json" << 'EOF'
 EOF
 
 # 9. Flaky test (passed but historically unstable)
-cat > "$OUTPUT_DIR/test-flaky.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-flaky-result.json" << 'EOF'
 {
   "uuid": "test-009",
   "name": "Potentially flaky test",
@@ -212,7 +212,7 @@ cat > "$OUTPUT_DIR/test-flaky.json" << 'EOF'
 EOF
 
 # 10. Test with links
-cat > "$OUTPUT_DIR/test-with-links.json" << 'EOF'
+cat > "$OUTPUT_DIR/test-with-links-result.json" << 'EOF'
 {
   "uuid": "test-010",
   "name": "Test with external links",
