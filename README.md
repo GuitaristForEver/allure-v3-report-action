@@ -166,11 +166,15 @@ MIT © Yuval Gabay
 
 ## 🙏 Acknowledgments
 
+This action is built with and dedicated to the [**Allure Framework v3**](https://github.com/allure-framework/allure3) - the next generation of the powerful test reporting framework. Special thanks to the Allure team for creating such an amazing tool that makes test reporting beautiful and insightful.
+
+- **Allure Framework v3**: [GitHub Repository](https://github.com/allure-framework/allure3) | [Official Documentation](https://allurereport.org/docs/)
 - Inspired by [simple-elf/allure-report-action](https://github.com/simple-elf/allure-report-action)
-- Built with [Allure Framework](https://allurereport.org/)
 
 ## 📚 Resources
 
-- [Allure v3 Documentation](https://allurereport.org/docs/)
+- **[Allure v3 Documentation](https://allurereport.org/docs/)** - Official documentation
+- **[Allure v3 GitHub Repository](https://github.com/allure-framework/allure3)** - Source code and issues
+- [Allure Report Examples](https://allurereport.org/docs/examples/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Creating GitHub Actions](https://docs.github.com/en/actions/creating-actions)

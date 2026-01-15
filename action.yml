@@ -1,5 +1,5 @@
 name: 'Allure v3 Report with History'
-description: 'Generate Allure v3 reports with history tracking'
+description: 'Generate beautiful Allure v3 reports with history tracking. Built with Allure Framework v3 (https://github.com/allure-framework/allure3)'
 author: 'Yuval Gabay'
 
 branding:
