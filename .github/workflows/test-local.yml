@@ -20,65 +20,8 @@ jobs:
       - name: Create sample test results
         run: |
           mkdir -p allure-results
-
-          # Create sample passing test
-          cat > allure-results/test-pass.json << 'EOF'
-          {
-            "uuid": "test-uuid-pass",
-            "name": "Sample Passing Test",
-            "status": "passed",
-            "stage": "finished",
-            "description": "This is a sample passing test",
-            "start": 1704067200000,
-            "stop": 1704067205000,
-            "labels": [
-              {"name": "feature", "value": "Authentication"},
-              {"name": "severity", "value": "critical"}
-            ]
-          }
-          EOF
-
-          # Create sample failing test
-          cat > allure-results/test-fail.json << 'EOF'
-          {
-            "uuid": "test-uuid-fail",
-            "name": "Sample Failing Test",
-            "status": "failed",
-            "stage": "finished",
-            "description": "This is a sample failing test",
-            "start": 1704067210000,
-            "stop": 1704067215000,
-            "statusDetails": {
-              "message": "Expected value to be true but got false",
-              "trace": "AssertionError: Expected value to be true but got false\n    at Test.run (test.js:15:10)"
-            },
-            "labels": [
-              {"name": "feature", "value": "Payment"},
-              {"name": "severity", "value": "normal"}
-            ]
-          }
-          EOF
-
-          # Create sample skipped test
-          cat > allure-results/test-skip.json << 'EOF'
-          {
-            "uuid": "test-uuid-skip",
-            "name": "Sample Skipped Test",
-            "status": "skipped",
-            "stage": "finished",
-            "description": "This test was skipped",
-            "start": 1704067220000,
-            "stop": 1704067220100,
-            "statusDetails": {
-              "message": "Test skipped due to configuration"
-            },
-            "labels": [
-              {"name": "feature", "value": "Reporting"}
-            ]
-          }
-          EOF
-
-          echo "✅ Created 3 sample test results"
+          ./tests/fixtures/create-fixtures.sh allure-results
+          echo "✅ Created test results using fixture generator"
 
       - name: Get Allure history
         uses: actions/checkout@v4

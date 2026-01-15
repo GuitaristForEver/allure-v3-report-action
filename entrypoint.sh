@@ -99,7 +99,11 @@ cp -r "./${INPUT_ALLURE_REPORT}/." "./${INPUT_ALLURE_HISTORY}/${INPUT_GITHUB_RUN
 # Save history for next run
 echo "💾 Saving history for next run..."
 mkdir -p "./${INPUT_ALLURE_HISTORY}/last-history"
-cp -r "./${INPUT_ALLURE_REPORT}/history/." "./${INPUT_ALLURE_HISTORY}/last-history"
+if [ -d "./${INPUT_ALLURE_REPORT}/history" ]; then
+  cp -r "./${INPUT_ALLURE_REPORT}/history/." "./${INPUT_ALLURE_HISTORY}/last-history"
+else
+  echo "⚠️  No history directory in report (first run or no tests)"
+fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ Report generated successfully!"
