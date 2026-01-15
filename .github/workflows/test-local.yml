@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
       - develop
   pull_request:
   workflow_dispatch:
@@ -126,7 +125,7 @@ jobs:
           ls -la allure-history/
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
