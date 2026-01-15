@@ -86,7 +86,11 @@ cp -r "./${INPUT_GH_PAGES}/last-history/." "./${INPUT_ALLURE_RESULTS}/history" 2
 echo "🎨 Generating Allure v3 report..."
 echo "   Results: ${INPUT_ALLURE_RESULTS}"
 echo "   Output:  ${INPUT_ALLURE_REPORT}"
-allure generate --clean "${INPUT_ALLURE_RESULTS}" -o "${INPUT_ALLURE_REPORT}"
+
+# Clean output directory if it exists (Allure v3 doesn't support --clean flag)
+rm -rf "./${INPUT_ALLURE_REPORT}"
+
+allure generate "${INPUT_ALLURE_RESULTS}" -o "${INPUT_ALLURE_REPORT}"
 
 # Copy report to history location
 echo "💾 Copying report to history..."
