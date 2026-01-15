@@ -21,6 +21,7 @@ jobs:
         with:
           release-type: simple
           package-name: allure-v3-report-action
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Update major version tag (v1, v2, etc.) when a release is created
       - name: Checkout code
