@@ -87,24 +87,10 @@ echo "🎨 Generating Allure v3 report..."
 echo "   Results: ${INPUT_ALLURE_RESULTS}"
 echo "   Output:  ${INPUT_ALLURE_REPORT}"
 
-# Debug: List files in results directory
-echo "🔍 Files in results directory:"
-ls -la "./${INPUT_ALLURE_RESULTS}/" 2>&1 || echo "Could not list results directory"
-
 # Clean output directory if it exists (Allure v3 doesn't support --clean flag)
 rm -rf "./${INPUT_ALLURE_REPORT}"
 
-echo "🚀 Running Allure generate command..."
-allure generate "${INPUT_ALLURE_RESULTS}" -o "${INPUT_ALLURE_REPORT}" 2>&1 | tee /tmp/allure-output.log
-echo "📝 Allure command completed"
-
-# Show what was generated
-echo "📁 Generated report contents:"
-ls -la "./${INPUT_ALLURE_REPORT}/" 2>&1 || echo "Report directory not found!"
-if [ -d "./${INPUT_ALLURE_REPORT}/data" ]; then
-  echo "📊 Data directory contents:"
-  ls -la "./${INPUT_ALLURE_REPORT}/data/"
-fi
+allure generate "${INPUT_ALLURE_RESULTS}" -o "${INPUT_ALLURE_REPORT}"
 
 # Copy report to history location
 echo "💾 Copying report to history..."
