@@ -1,0 +1,213 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-action:
+    name: Validate Action Changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+
+      - name: Validate action.yml
+        run: |
+          echo "🔍 Validating action.yml structure..."
+
+          # Check action.yml exists
+          if [ ! -f "action.yml" ]; then
+            echo "❌ action.yml not found"
+            exit 1
+          fi
+
+          # Check required fields exist
+          grep -q "name:" action.yml || { echo "❌ Missing 'name' field"; exit 1; }
+          grep -q "description:" action.yml || { echo "❌ Missing 'description' field"; exit 1; }
+          grep -q "runs:" action.yml || { echo "❌ Missing 'runs' field"; exit 1; }
+
+          echo "✅ action.yml is valid"
+
+      - name: Validate Dockerfile
+        run: |
+          echo "🔍 Validating Dockerfile..."
+
+          if [ ! -f "Dockerfile" ]; then
+            echo "❌ Dockerfile not found"
+            exit 1
+          fi
+
+          # Check FROM statement exists
+          grep -q "FROM" Dockerfile || { echo "❌ Missing FROM statement"; exit 1; }
+
+          # Check Allure installation
+          grep -q "npm install -g allure" Dockerfile || { echo "❌ Missing Allure installation"; exit 1; }
+
+          echo "✅ Dockerfile is valid"
+
+      - name: Validate entrypoint script
+        run: |
+          echo "🔍 Validating entrypoint.sh..."
+
+          if [ ! -f "entrypoint.sh" ]; then
+            echo "❌ entrypoint.sh not found"
+            exit 1
+          fi
+
+          # Check shebang
+          head -n 1 entrypoint.sh | grep -q "^#!/" || { echo "❌ Missing shebang"; exit 1; }
+
+          # Check executable
+          [ -x "entrypoint.sh" ] || chmod +x entrypoint.sh
+
+          # Basic shell syntax check
+          bash -n entrypoint.sh || { echo "❌ Syntax error in entrypoint.sh"; exit 1; }
+
+          echo "✅ entrypoint.sh is valid"
+
+      - name: Run fixture generator test
+        run: |
+          echo "🔍 Testing fixture generator..."
+
+          mkdir -p /tmp/test-fixtures
+          ./tests/fixtures/create-fixtures.sh /tmp/test-fixtures
+
+          # Verify 10 files were created
+          FILE_COUNT=$(ls /tmp/test-fixtures/*.json | wc -l)
+          if [ "$FILE_COUNT" != "10" ]; then
+            echo "❌ Expected 10 fixture files, found: $FILE_COUNT"
+            exit 1
+          fi
+
+          # Verify all have required Allure v3 fields
+          for file in /tmp/test-fixtures/*.json; do
+            grep -q '"uuid":' "$file" || { echo "❌ Missing uuid in $file"; exit 1; }
+            grep -q '"historyId":' "$file" || { echo "❌ Missing historyId in $file"; exit 1; }
+            grep -q '"testCaseId":' "$file" || { echo "❌ Missing testCaseId in $file"; exit 1; }
+            grep -q '"fullName":' "$file" || { echo "❌ Missing fullName in $file"; exit 1; }
+            grep -q '"name":' "$file" || { echo "❌ Missing name in $file"; exit 1; }
+            grep -q '"status":' "$file" || { echo "❌ Missing status in $file"; exit 1; }
+          done
+
+          echo "✅ All fixtures are valid"
+
+      - name: Build Docker image
+        run: |
+          echo "🔍 Building Docker image..."
+          docker build -t allure-v3-action:pr-test .
+          echo "✅ Docker image built successfully"
+
+      - name: Test action with Docker
+        run: |
+          echo "🔍 Testing action end-to-end..."
+
+          # Create test fixtures
+          mkdir -p test-results
+          ./tests/fixtures/create-fixtures.sh test-results
+
+          # Create minimal gh-pages structure
+          mkdir -p gh-pages
+
+          # Run the action
+          docker run --rm \
+            -e INPUT_ALLURE_RESULTS=test-results \
+            -e INPUT_ALLURE_REPORT=test-report \
+            -e INPUT_GH_PAGES=gh-pages \
+            -e INPUT_ALLURE_HISTORY=test-history \
+            -e INPUT_KEEP_REPORTS=20 \
+            -e INPUT_GITHUB_RUN_NUM=1 \
+            -e INPUT_GITHUB_RUN_ID=1 \
+            -e INPUT_GITHUB_REPO=test/repo \
+            -e INPUT_GITHUB_REPO_OWNER=test \
+            -e INPUT_GITHUB_TESTS_REPO=test/repo \
+            -e INPUT_GITHUB_SERVER_URL=https://github.com \
+            -e INPUT_SUBFOLDER='' \
+            -e INPUT_REPORT_URL='' \
+            -e INPUT_REPORT_NAME='PR Test Report' \
+            -v $(pwd):/github/workspace \
+            -w /github/workspace \
+            allure-v3-action:pr-test
+
+          # Verify outputs
+          if [ ! -d "test-history/1" ]; then
+            echo "❌ Report directory not created"
+            exit 1
+          fi
+
+          if [ ! -f "test-history/1/summary.json" ]; then
+            echo "❌ summary.json not created"
+            exit 1
+          fi
+
+          # Verify test count
+          TOTAL=$(cat test-history/1/widgets/statistic.json | grep -o '"total":[0-9]*' | cut -d':' -f2)
+          if [ "$TOTAL" != "9" ]; then
+            echo "❌ Expected 9 tests, found: $TOTAL"
+            cat test-history/1/widgets/statistic.json
+            exit 1
+          fi
+
+          echo "✅ Action executed successfully with correct output"
+          echo "📊 Test statistics:"
+          cat test-history/1/widgets/statistic.json
+
+      - name: Comment PR with test results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let comment = '## 🧪 PR Validation Results\n\n';
+
+            if (fs.existsSync('test-history/1/widgets/statistic.json')) {
+              const stats = JSON.parse(fs.readFileSync('test-history/1/widgets/statistic.json', 'utf8'));
+
+              comment += '### Test Report Generated Successfully ✅\n\n';
+              comment += '| Metric | Count |\n';
+              comment += '|--------|-------|\n';
+              comment += `| Total Tests | ${stats.total || 0} |\n`;
+              comment += `| Passed | ${stats.passed || 0} ✅ |\n`;
+              comment += `| Failed | ${stats.failed || 0} ❌ |\n`;
+              comment += `| Broken | ${stats.broken || 0} 🔴 |\n`;
+              comment += `| Skipped | ${stats.skipped || 0} ⏭️ |\n`;
+
+              comment += '\n✨ The action successfully generated an Allure v3 report with test data!';
+            } else {
+              comment += '### ⚠️ Report Generation Failed\n\n';
+              comment += 'The action did not produce the expected output. Please review the workflow logs.';
+            }
+
+            // Find existing comment and update, or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('PR Validation Results')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

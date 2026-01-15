@@ -69,6 +69,50 @@ jobs:
           echo "📁 Report structure:"
           ls -la allure-history/
 
+      - name: Verify report content
+        run: |
+          echo "📊 Verifying Allure report contains test results..."
+
+          REPORT_DIR="allure-history/${{ github.run_number }}"
+
+          # Check summary.json exists and contains test data
+          if [ ! -f "$REPORT_DIR/summary.json" ]; then
+            echo "❌ summary.json not found"
+            exit 1
+          fi
+
+          # Verify statistic.json has test counts
+          if [ ! -f "$REPORT_DIR/widgets/statistic.json" ]; then
+            echo "❌ widgets/statistic.json not found"
+            exit 1
+          fi
+
+          # Parse and verify test counts (should be 9 tests from fixtures)
+          TOTAL=$(cat "$REPORT_DIR/widgets/statistic.json" | grep -o '"total":[0-9]*' | cut -d':' -f2)
+
+          if [ "$TOTAL" != "9" ]; then
+            echo "❌ Expected 9 tests, found: $TOTAL"
+            cat "$REPORT_DIR/widgets/statistic.json"
+            exit 1
+          fi
+
+          # Verify test data directory exists and has content
+          if [ ! -d "$REPORT_DIR/data/test-results" ]; then
+            echo "❌ test-results directory not found"
+            exit 1
+          fi
+
+          TEST_FILES=$(ls "$REPORT_DIR/data/test-results/" | wc -l)
+          if [ "$TEST_FILES" -eq 0 ]; then
+            echo "❌ No test result files found in data/test-results/"
+            exit 1
+          fi
+
+          echo "✅ Report contains expected test data:"
+          echo "   - Total tests: $TOTAL"
+          echo "   - Test result files: $TEST_FILES"
+          cat "$REPORT_DIR/widgets/statistic.json"
+
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
