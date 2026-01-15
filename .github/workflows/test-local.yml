@@ -1,0 +1,141 @@
+name: Test Local Action
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-action:
+    name: Test Allure v3 Action
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create sample test results
+        run: |
+          mkdir -p allure-results
+
+          # Create sample passing test
+          cat > allure-results/test-pass.json << 'EOF'
+          {
+            "uuid": "test-uuid-pass",
+            "name": "Sample Passing Test",
+            "status": "passed",
+            "stage": "finished",
+            "description": "This is a sample passing test",
+            "start": 1704067200000,
+            "stop": 1704067205000,
+            "labels": [
+              {"name": "feature", "value": "Authentication"},
+              {"name": "severity", "value": "critical"}
+            ]
+          }
+          EOF
+
+          # Create sample failing test
+          cat > allure-results/test-fail.json << 'EOF'
+          {
+            "uuid": "test-uuid-fail",
+            "name": "Sample Failing Test",
+            "status": "failed",
+            "stage": "finished",
+            "description": "This is a sample failing test",
+            "start": 1704067210000,
+            "stop": 1704067215000,
+            "statusDetails": {
+              "message": "Expected value to be true but got false",
+              "trace": "AssertionError: Expected value to be true but got false\n    at Test.run (test.js:15:10)"
+            },
+            "labels": [
+              {"name": "feature", "value": "Payment"},
+              {"name": "severity", "value": "normal"}
+            ]
+          }
+          EOF
+
+          # Create sample skipped test
+          cat > allure-results/test-skip.json << 'EOF'
+          {
+            "uuid": "test-uuid-skip",
+            "name": "Sample Skipped Test",
+            "status": "skipped",
+            "stage": "finished",
+            "description": "This test was skipped",
+            "start": 1704067220000,
+            "stop": 1704067220100,
+            "statusDetails": {
+              "message": "Test skipped due to configuration"
+            },
+            "labels": [
+              {"name": "feature", "value": "Reporting"}
+            ]
+          }
+          EOF
+
+          echo "✅ Created 3 sample test results"
+
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure Report
+        uses: ./
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          allure_report: allure-report
+          report_name: 'Test Report - Allure v3'
+          keep_reports: 20
+
+      - name: Verify report structure
+        run: |
+          echo "🔍 Verifying generated report structure..."
+
+          if [ ! -d "allure-history" ]; then
+            echo "❌ allure-history directory not created"
+            exit 1
+          fi
+
+          if [ ! -f "allure-history/index.html" ]; then
+            echo "❌ index.html not created"
+            exit 1
+          fi
+
+          if [ ! -d "allure-history/${{ github.run_number }}" ]; then
+            echo "❌ Report directory for run ${{ github.run_number }} not created"
+            exit 1
+          fi
+
+          if [ ! -d "allure-history/last-history" ]; then
+            echo "❌ last-history directory not created"
+            exit 1
+          fi
+
+          echo "✅ All expected directories and files present"
+          echo "📁 Report structure:"
+          ls -la allure-history/
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+          keep_files: true
+
+      - name: Post report link
+        if: always()
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_number }}"
+          echo "📊 Report will be available at: ${REPORT_URL}"
