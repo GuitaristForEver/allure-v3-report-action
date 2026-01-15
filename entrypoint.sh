@@ -87,6 +87,10 @@ echo "🎨 Generating Allure v3 report..."
 echo "   Results: ${INPUT_ALLURE_RESULTS}"
 echo "   Output:  ${INPUT_ALLURE_REPORT}"
 
+# Debug: List files in results directory
+echo "🔍 Files in results directory:"
+ls -la "./${INPUT_ALLURE_RESULTS}/" 2>&1 || echo "Could not list results directory"
+
 # Clean output directory if it exists (Allure v3 doesn't support --clean flag)
 rm -rf "./${INPUT_ALLURE_REPORT}"
 
