@@ -1,0 +1,65 @@
+name: Integration Test - Report Cleanup
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-cleanup:
+    name: Test Report Retention Cleanup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test results
+        run: |
+          mkdir -p allure-results
+          ../fixtures/create-fixtures.sh allure-results
+        working-directory: tests
+
+      - name: Simulate old reports
+        run: |
+          mkdir -p gh-pages/cleanup-test
+          # Create 25 old report directories (more than keep_reports=3)
+          for i in {1..25}; do
+            mkdir -p "gh-pages/cleanup-test/$i"
+            echo "Report $i" > "gh-pages/cleanup-test/$i/index.html"
+          done
+          echo "Created 25 old reports"
+
+      - name: Generate new report with cleanup (keep only 3)
+        uses: ./
+        with:
+          allure_results: tests/allure-results
+          allure_history: allure-history
+          gh_pages: gh-pages
+          subfolder: cleanup-test
+          keep_reports: 3
+          report_name: Cleanup Test
+
+      - name: Verify cleanup worked
+        run: |
+          # Count directories (excluding index.html, last-history)
+          COUNT=$(ls allure-history/cleanup-test | grep -E '^[0-9]+$' | wc -l)
+
+          echo "Report directories after cleanup: $COUNT"
+
+          # Should have kept 3 old + 1 new = 4 reports
+          if [ $COUNT -gt 4 ]; then
+            echo "❌ Cleanup failed - too many reports kept: $COUNT"
+            ls -la allure-history/cleanup-test
+            exit 1
+          fi
+
+          echo "✅ Cleanup verified - $COUNT reports kept"
+
+      - name: Verify newest reports kept
+        run: |
+          # Check that the newest reports are kept
+          if [ ! -d "allure-history/cleanup-test/${{ github.run_number }}" ]; then
+            echo "❌ Current run report was deleted!"
+            exit 1
+          fi
+
+          echo "✅ Newest reports preserved"

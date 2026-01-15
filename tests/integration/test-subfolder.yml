@@ -1,0 +1,70 @@
+name: Integration Test - Subfolder Support
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-multiple-subfolders:
+    name: Test Multiple Reports via Subfolders
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        suite: [frontend, backend, mobile]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test results for ${{ matrix.suite }}
+        run: |
+          mkdir -p allure-results
+          cat > allure-results/test-${{ matrix.suite }}.json << EOF
+          {
+            "uuid": "test-${{ matrix.suite }}-001",
+            "name": "${{ matrix.suite }} test",
+            "status": "passed",
+            "stage": "finished",
+            "start": 1704067200000,
+            "stop": 1704067205000,
+            "labels": [
+              {"name": "suite", "value": "${{ matrix.suite }}"}
+            ]
+          }
+          EOF
+
+      - name: Get history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Report for ${{ matrix.suite }}
+        uses: ./
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          subfolder: ${{ matrix.suite }}
+          report_name: ${{ matrix.suite }} Tests
+
+      - name: Verify subfolder structure
+        run: |
+          if [ ! -d "allure-history/${{ matrix.suite }}/${{ github.run_number }}" ]; then
+            echo "❌ Subfolder report not created"
+            exit 1
+          fi
+          if [ ! -f "allure-history/${{ matrix.suite }}/index.html" ]; then
+            echo "❌ Subfolder index.html not created"
+            exit 1
+          fi
+          echo "✅ Subfolder ${{ matrix.suite }} verified"
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+          keep_files: true

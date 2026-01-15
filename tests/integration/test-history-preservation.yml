@@ -1,0 +1,105 @@
+name: Integration Test - History Preservation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly
+
+jobs:
+  test-history:
+    name: Test History Across Multiple Runs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test results for Run 1
+        run: |
+          mkdir -p allure-results
+          ../fixtures/create-fixtures.sh allure-results
+        working-directory: tests
+
+      - name: Get history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Report Run 1
+        uses: ./
+        with:
+          allure_results: tests/allure-results
+          allure_history: allure-history
+          subfolder: history-test
+          report_name: History Test Run 1
+
+      - name: Verify Run 1 structure
+        run: |
+          if [ ! -d "allure-history/history-test/${{ github.run_number }}" ]; then
+            echo "❌ Report directory not created"
+            exit 1
+          fi
+          if [ ! -d "allure-history/history-test/last-history" ]; then
+            echo "❌ History not saved"
+            exit 1
+          fi
+          echo "✅ Run 1 structure verified"
+
+      - name: Save history for Run 2
+        run: |
+          mkdir -p gh-pages-test/history-test
+          cp -r allure-history/history-test/* gh-pages-test/history-test/
+
+      - name: Create test results for Run 2
+        run: |
+          rm -rf allure-results
+          mkdir -p allure-results
+          # Create slightly different results
+          cat > allure-results/test-new.json << 'EOF'
+          {
+            "uuid": "test-new-001",
+            "name": "New test in Run 2",
+            "status": "passed",
+            "stage": "finished",
+            "start": 1704067700000,
+            "stop": 1704067705000
+          }
+          EOF
+        working-directory: tests
+
+      - name: Generate Report Run 2 (with history)
+        uses: ./
+        with:
+          allure_results: tests/allure-results
+          allure_history: allure-history
+          gh_pages: gh-pages-test
+          subfolder: history-test
+          report_name: History Test Run 2
+
+      - name: Verify history preservation
+        run: |
+          # Check that both runs exist
+          if [ ! -d "allure-history/history-test/${{ github.run_number }}" ]; then
+            echo "❌ Run 2 directory not created"
+            exit 1
+          fi
+
+          # Check that history was restored
+          REPORT_DIR="allure-history/history-test/${{ github.run_number }}"
+          if [ ! -d "$REPORT_DIR/history" ]; then
+            echo "❌ History not included in Run 2"
+            exit 1
+          fi
+
+          echo "✅ History preservation verified"
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+          keep_files: true
