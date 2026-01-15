@@ -1,0 +1,82 @@
+name: 'Allure v3 Report with History'
+description: 'Generate Allure v3 reports with history tracking'
+author: 'Yuval Gabay'
+
+branding:
+  icon: 'bar-chart-2'
+  color: 'blue'
+
+inputs:
+  allure_results:
+    description: 'Path to Allure test results directory'
+    required: true
+    default: 'allure-results'
+
+  allure_report:
+    description: 'Path where Allure will write the generated report'
+    required: true
+    default: 'allure-report'
+
+  gh_pages:
+    description: 'Path to gh-pages branch checkout'
+    required: true
+    default: 'gh-pages'
+
+  allure_history:
+    description: 'Path for allure history publication'
+    required: true
+    default: 'allure-history'
+
+  subfolder:
+    description: 'Subfolder for multiple reports in same repo'
+    required: false
+    default: ''
+
+  keep_reports:
+    description: 'Number of previous reports to keep'
+    required: false
+    default: '20'
+
+  report_name:
+    description: 'Custom report title'
+    required: false
+    default: 'Allure Report'
+
+  github_run_num:
+    description: 'GitHub Actions run number'
+    required: true
+    default: ${{ github.run_number }}
+
+  github_run_id:
+    description: 'GitHub Actions run id'
+    required: true
+    default: ${{ github.run_id }}
+
+  github_repo:
+    description: 'GitHub repository'
+    required: true
+    default: ${{ github.repository }}
+
+  github_repo_owner:
+    description: 'GitHub repository owner'
+    required: true
+    default: ${{ github.repository_owner }}
+
+  github_tests_repo:
+    description: 'Repository where tests are run'
+    required: true
+    default: ${{ github.repository }}
+
+  report_url:
+    description: 'Custom URL instead of *.github.io'
+    required: false
+    default: ''
+
+  github_server_url:
+    description: 'GitHub server URL'
+    required: true
+    default: ${{ github.server_url }}
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

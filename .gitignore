@@ -1,0 +1,19 @@
+# Test artifacts
+allure-results/
+allure-report/
+allure-history/
+gh-pages/
+
+# Node
+node_modules/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
