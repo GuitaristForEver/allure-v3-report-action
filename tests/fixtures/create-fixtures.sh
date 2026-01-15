@@ -12,6 +12,9 @@ echo "Creating comprehensive Allure test fixtures..."
 cat > "$OUTPUT_DIR/test-pass-simple-result.json" << 'EOF'
 {
   "uuid": "test-001",
+  "historyId": "simple-passing-test",
+  "testCaseId": "TC-001",
+  "fullName": "tests.core.SimplePassingTest",
   "name": "Simple passing test",
   "status": "passed",
   "stage": "finished",
@@ -29,6 +32,9 @@ EOF
 cat > "$OUTPUT_DIR/test-fail-with-trace-result.json" << 'EOF'
 {
   "uuid": "test-002",
+  "historyId": "failing-test-with-trace",
+  "testCaseId": "TC-002",
+  "fullName": "tests.auth.FailingTestWithTrace",
   "name": "Failing test with detailed trace",
   "status": "failed",
   "stage": "finished",
@@ -51,6 +57,9 @@ EOF
 cat > "$OUTPUT_DIR/test-skip-result.json" << 'EOF'
 {
   "uuid": "test-003",
+  "historyId": "skipped-test-pending",
+  "testCaseId": "TC-003",
+  "fullName": "tests.payment.SkippedTestPending",
   "name": "Skipped test - pending implementation",
   "status": "skipped",
   "stage": "finished",
@@ -71,6 +80,9 @@ EOF
 cat > "$OUTPUT_DIR/test-parameterized-result.json" << 'EOF'
 {
   "uuid": "test-004",
+  "historyId": "parameterized-test-admin-superuser",
+  "testCaseId": "TC-004",
+  "fullName": "tests.authorization.ParameterizedTest",
   "name": "Parameterized test [user=admin, role=superuser]",
   "status": "passed",
   "stage": "finished",
@@ -92,6 +104,9 @@ EOF
 cat > "$OUTPUT_DIR/test-with-attachment-result.json" << 'EOF'
 {
   "uuid": "test-005",
+  "historyId": "test-with-screenshot-attachment",
+  "testCaseId": "TC-005",
+  "fullName": "tests.ui.TestWithScreenshotAttachment",
   "name": "Test with screenshot attachment",
   "status": "failed",
   "stage": "finished",
@@ -119,6 +134,9 @@ EOF
 cat > "$OUTPUT_DIR/test-long-running-result.json" << 'EOF'
 {
   "uuid": "test-006",
+  "historyId": "long-running-integration-test",
+  "testCaseId": "TC-006",
+  "fullName": "tests.e2e.LongRunningIntegrationTest",
   "name": "Long-running integration test",
   "status": "passed",
   "stage": "finished",
@@ -137,6 +155,9 @@ EOF
 cat > "$OUTPUT_DIR/test-broken-result.json" << 'EOF'
 {
   "uuid": "test-007",
+  "historyId": "broken-test-setup-failed",
+  "testCaseId": "TC-007",
+  "fullName": "tests.database.BrokenTestSetupFailed",
   "name": "Broken test - setup failed",
   "status": "broken",
   "stage": "finished",
@@ -157,6 +178,9 @@ EOF
 cat > "$OUTPUT_DIR/test-with-steps-result.json" << 'EOF'
 {
   "uuid": "test-008",
+  "historyId": "test-with-multiple-steps",
+  "testCaseId": "TC-008",
+  "fullName": "tests.auth.TestWithMultipleSteps",
   "name": "Test with multiple steps",
   "status": "passed",
   "stage": "finished",
@@ -197,6 +221,9 @@ EOF
 cat > "$OUTPUT_DIR/test-flaky-result.json" << 'EOF'
 {
   "uuid": "test-009",
+  "historyId": "potentially-flaky-test",
+  "testCaseId": "TC-009",
+  "fullName": "tests.network.PotentiallyFlakyTest",
   "name": "Potentially flaky test",
   "status": "passed",
   "stage": "finished",
@@ -215,6 +242,9 @@ EOF
 cat > "$OUTPUT_DIR/test-with-links-result.json" << 'EOF'
 {
   "uuid": "test-010",
+  "historyId": "test-with-external-links",
+  "testCaseId": "TC-010",
+  "fullName": "tests.docs.TestWithExternalLinks",
   "name": "Test with external links",
   "status": "passed",
   "stage": "finished",
