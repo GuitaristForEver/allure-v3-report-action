@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/GuitaristForEver/allure-v3-report-action/compare/v1.0.1...v1.1.0) (2026-01-16)
+
+
+### Features
+
+* add Dependabot to track Allure v3 updates ([556c652](https://github.com/GuitaristForEver/allure-v3-report-action/commit/556c652cabd56d51a34aaf0970466dfdf7bdba48))
+* enhance Allure report with categories, environment, timeline, and retry data ([#5](https://github.com/GuitaristForEver/allure-v3-report-action/issues/5)) ([931e740](https://github.com/GuitaristForEver/allure-v3-report-action/commit/931e740f2e559362c789ccec0824d45ec0a3f3ba))
+
+
+### Bug Fixes
+
+* add package.json for Dependabot to track Allure v3 ([b751da0](https://github.com/GuitaristForEver/allure-v3-report-action/commit/b751da04dcf87bb6a6f021db2442b06052a21b4c))
+
 ## [1.0.1](https://github.com/GuitaristForEver/allure-v3-report-action/compare/v1.0.0...v1.0.1) (2026-01-15)
 
 
