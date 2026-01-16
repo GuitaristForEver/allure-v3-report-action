@@ -147,8 +147,8 @@ jobs:
 
           # Verify test count
           TOTAL=$(cat test-history/1/widgets/statistic.json | grep -o '"total":[0-9]*' | cut -d':' -f2)
-          if [ "$TOTAL" != "9" ]; then
-            echo "❌ Expected 9 tests, found: $TOTAL"
+          if [ "$TOTAL" != "10" ]; then
+            echo "❌ Expected 10 tests, found: $TOTAL"
             cat test-history/1/widgets/statistic.json
             exit 1
           fi

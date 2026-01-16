@@ -87,11 +87,11 @@ jobs:
             exit 1
           fi
 
-          # Parse and verify test counts (should be 9 tests from fixtures)
+          # Parse and verify test counts (should be 10 tests from fixtures)
           TOTAL=$(cat "$REPORT_DIR/widgets/statistic.json" | grep -o '"total":[0-9]*' | cut -d':' -f2)
 
-          if [ "$TOTAL" != "9" ]; then
-            echo "❌ Expected 9 tests, found: $TOTAL"
+          if [ "$TOTAL" != "10" ]; then
+            echo "❌ Expected 10 tests, found: $TOTAL"
             cat "$REPORT_DIR/widgets/statistic.json"
             exit 1
           fi
