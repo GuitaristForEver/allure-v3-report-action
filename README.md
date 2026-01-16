@@ -136,6 +136,27 @@ Your existing history will be preserved automatically.
 - **Active Development** - Latest features and improvements
 - **v2 Compatible** - Reads Allure v2 test results format
 
+## 🤖 Automatic Updates
+
+This repository uses **Dependabot** to track Allure v3 releases and automatically create PRs when updates are available.
+
+### What's tracked:
+- 📦 **Allure npm package** - Weekly checks for new versions
+- 🎯 **GitHub Actions** - Weekly checks for action updates
+
+### When Allure updates:
+Dependabot will create a PR with:
+- Detailed changelog information
+- Checklist for verifying new features
+- **Special attention** to categories.json support ([Issue #441](https://github.com/allure-framework/allure3/issues/441))
+
+### Current known limitations:
+- ❌ **Quality Gates**: Categories.json not yet supported in Allure v3.0.1
+- ⏳ **Status Dynamics**: Requires 2+ workflow runs to display trends
+- ⏳ **Status Transitions**: Requires 2+ workflow runs to show changes
+
+Once categories support is added to Allure v3, Dependabot will create a PR and the Quality Gates widget will automatically start working!
+
 ## 📊 Live Examples
 
 [Example Report](https://yuvalgabay.github.io/allure-v3-report-action/)
