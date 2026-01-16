@@ -1,0 +1,1 @@
+[{"name":"Browser","values":["Chrome"]},{"name":"Browser.Version","values":["120.0"]},{"name":"OS","values":["Ubuntu"]},{"name":"OS.Version","values":["22.04"]},{"name":"Stand","values":["Test"]},{"name":"Node.Version","values":["20.x"]},{"name":"Test.Framework","values":["Custom Fixtures"]},{"name":"Allure.Version","values":["3.0.1"]}]
