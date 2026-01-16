@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Create sample test results
         run: |
@@ -26,7 +26,7 @@ jobs:
           echo "✅ Created test results using fixture generator"
 
       - name: Get Allure history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         continue-on-error: true
         with:
           ref: gh-pages
