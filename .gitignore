@@ -1,19 +1,23 @@
-# Test artifacts
-allure-results/
-allure-report/
-allure-history/
-gh-pages/
-
-# Node
+# Dependencies
 node_modules/
-*.log
+package-lock.json
 
-# OS
-.DS_Store
-Thumbs.db
+# Test outputs
+test-history/
+test-report/
+test-results/*.json
+test-results/*.properties
+!test-results/.gitkeep
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local testing
+categories-view

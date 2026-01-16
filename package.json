@@ -1,0 +1,23 @@
+{
+  "name": "allure-v3-report-action",
+  "version": "1.0.0",
+  "description": "GitHub Action for generating Allure v3 test reports",
+  "private": true,
+  "dependencies": {
+    "allure": "3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuitaristForEver/allure-v3-report-action.git"
+  },
+  "keywords": [
+    "allure",
+    "allure-report",
+    "allure-v3",
+    "github-action",
+    "testing",
+    "test-report"
+  ],
+  "author": "Yuval Gabay",
+  "license": "MIT"
+}
