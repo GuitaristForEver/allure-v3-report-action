@@ -1,12 +1,12 @@
 FROM node:20-slim
 
-# Install Allure v3 CLI globally
-ARG ALLURE_VERSION=3.0.1
-RUN npm install -g allure@${ALLURE_VERSION}
-
 # Set up working directory
 ENV ROOT=/app
 WORKDIR $ROOT
+
+# Copy package.json and install Allure v3 CLI
+COPY package.json ./
+RUN npm install -g allure@$(node -p "require('./package.json').dependencies.allure")
 
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
