@@ -78,15 +78,27 @@ jobs:
           mkdir -p /tmp/test-fixtures
           ./tests/fixtures/create-fixtures.sh /tmp/test-fixtures
 
-          # Verify 10 files were created
-          FILE_COUNT=$(ls /tmp/test-fixtures/*.json | wc -l)
-          if [ "$FILE_COUNT" != "10" ]; then
-            echo "❌ Expected 10 fixture files, found: $FILE_COUNT"
+          # Verify 11 test result files were created
+          FILE_COUNT=$(ls /tmp/test-fixtures/*-result.json | wc -l)
+          if [ "$FILE_COUNT" != "11" ]; then
+            echo "❌ Expected 11 test result files, found: $FILE_COUNT"
             exit 1
           fi
 
-          # Verify all have required Allure v3 fields
-          for file in /tmp/test-fixtures/*.json; do
+          # Verify categories.json exists
+          if [ ! -f "/tmp/test-fixtures/categories.json" ]; then
+            echo "❌ categories.json not created"
+            exit 1
+          fi
+
+          # Verify environment.properties exists
+          if [ ! -f "/tmp/test-fixtures/environment.properties" ]; then
+            echo "❌ environment.properties not created"
+            exit 1
+          fi
+
+          # Verify all test results have required Allure v3 fields
+          for file in /tmp/test-fixtures/*-result.json; do
             grep -q '"uuid":' "$file" || { echo "❌ Missing uuid in $file"; exit 1; }
             grep -q '"historyId":' "$file" || { echo "❌ Missing historyId in $file"; exit 1; }
             grep -q '"testCaseId":' "$file" || { echo "❌ Missing testCaseId in $file"; exit 1; }
@@ -147,8 +159,8 @@ jobs:
 
           # Verify test count
           TOTAL=$(cat test-history/1/widgets/statistic.json | grep -o '"total":[0-9]*' | cut -d':' -f2)
-          if [ "$TOTAL" != "9" ]; then
-            echo "❌ Expected 9 tests, found: $TOTAL"
+          if [ "$TOTAL" != "10" ]; then
+            echo "❌ Expected 10 tests, found: $TOTAL"
             cat test-history/1/widgets/statistic.json
             exit 1
           fi

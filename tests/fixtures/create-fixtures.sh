@@ -23,7 +23,9 @@ cat > "$OUTPUT_DIR/test-pass-simple-result.json" << 'EOF'
   "stop": 1704067205000,
   "labels": [
     {"name": "feature", "value": "Core"},
-    {"name": "severity", "value": "normal"}
+    {"name": "severity", "value": "normal"},
+    {"name": "host", "value": "github-runner-1"},
+    {"name": "thread", "value": "main-thread"}
   ]
 }
 EOF
@@ -48,7 +50,9 @@ cat > "$OUTPUT_DIR/test-fail-with-trace-result.json" << 'EOF'
   "labels": [
     {"name": "feature", "value": "Authentication"},
     {"name": "severity", "value": "critical"},
-    {"name": "suite", "value": "Login Flow"}
+    {"name": "suite", "value": "Login Flow"},
+    {"name": "host", "value": "github-runner-1"},
+    {"name": "thread", "value": "main-thread"}
   ]
 }
 EOF
@@ -71,7 +75,9 @@ cat > "$OUTPUT_DIR/test-skip-result.json" << 'EOF'
   },
   "labels": [
     {"name": "feature", "value": "Payment"},
-    {"name": "severity", "value": "minor"}
+    {"name": "severity", "value": "minor"},
+    {"name": "host", "value": "github-runner-2"},
+    {"name": "thread", "value": "worker-1"}
   ]
 }
 EOF
@@ -95,7 +101,9 @@ cat > "$OUTPUT_DIR/test-parameterized-result.json" << 'EOF'
   ],
   "labels": [
     {"name": "feature", "value": "Authorization"},
-    {"name": "severity", "value": "critical"}
+    {"name": "severity", "value": "critical"},
+    {"name": "host", "value": "github-runner-2"},
+    {"name": "thread", "value": "worker-2"}
   ]
 }
 EOF
@@ -125,7 +133,9 @@ cat > "$OUTPUT_DIR/test-with-attachment-result.json" << 'EOF'
   ],
   "labels": [
     {"name": "feature", "value": "UI"},
-    {"name": "severity", "value": "normal"}
+    {"name": "severity", "value": "normal"},
+    {"name": "host", "value": "github-runner-3"},
+    {"name": "thread", "value": "ui-thread"}
   ]
 }
 EOF
@@ -146,7 +156,9 @@ cat > "$OUTPUT_DIR/test-long-running-result.json" << 'EOF'
   "labels": [
     {"name": "feature", "value": "Integration"},
     {"name": "severity", "value": "normal"},
-    {"name": "suite", "value": "E2E Tests"}
+    {"name": "suite", "value": "E2E Tests"},
+    {"name": "host", "value": "github-runner-3"},
+    {"name": "thread", "value": "integration-thread"}
   ]
 }
 EOF
@@ -169,7 +181,9 @@ cat > "$OUTPUT_DIR/test-broken-result.json" << 'EOF'
   },
   "labels": [
     {"name": "feature", "value": "Database"},
-    {"name": "severity", "value": "blocker"}
+    {"name": "severity", "value": "blocker"},
+    {"name": "host", "value": "github-runner-4"},
+    {"name": "thread", "value": "db-thread"}
   ]
 }
 EOF
@@ -212,7 +226,9 @@ cat > "$OUTPUT_DIR/test-with-steps-result.json" << 'EOF'
   ],
   "labels": [
     {"name": "feature", "value": "Authentication"},
-    {"name": "severity", "value": "critical"}
+    {"name": "severity", "value": "critical"},
+    {"name": "host", "value": "github-runner-4"},
+    {"name": "thread", "value": "auth-thread"}
   ]
 }
 EOF
@@ -233,7 +249,9 @@ cat > "$OUTPUT_DIR/test-flaky-result.json" << 'EOF'
   "labels": [
     {"name": "feature", "value": "Network"},
     {"name": "severity", "value": "normal"},
-    {"name": "flaky", "value": "true"}
+    {"name": "flaky", "value": "true"},
+    {"name": "host", "value": "github-runner-5"},
+    {"name": "thread", "value": "network-thread"}
   ]
 }
 EOF
@@ -265,14 +283,92 @@ cat > "$OUTPUT_DIR/test-with-links-result.json" << 'EOF'
   ],
   "labels": [
     {"name": "feature", "value": "Documentation"},
-    {"name": "severity", "value": "trivial"}
+    {"name": "severity", "value": "trivial"},
+    {"name": "host", "value": "github-runner-5"},
+    {"name": "thread", "value": "docs-thread"}
   ]
 }
 EOF
 
-echo "✅ Created 10 test fixtures in $OUTPUT_DIR"
+# 11. Flaky test with retry information
+cat > "$OUTPUT_DIR/test-flaky-with-retries-result.json" << 'EOF'
+{
+  "uuid": "test-011",
+  "historyId": "flaky-test-with-retries",
+  "testCaseId": "TC-011",
+  "fullName": "tests.flaky.FlakyTestWithRetries",
+  "name": "Flaky test - eventually passes after retry",
+  "status": "passed",
+  "stage": "finished",
+  "description": "Test that failed first but passed on retry",
+  "start": 1704067350000,
+  "stop": 1704067358000,
+  "labels": [
+    {"name": "feature", "value": "Retry Logic"},
+    {"name": "severity", "value": "normal"},
+    {"name": "host", "value": "github-runner-3"},
+    {"name": "thread", "value": "retry-thread"},
+    {"name": "flaky", "value": "true"}
+  ],
+  "statusDetails": {
+    "flaky": true
+  },
+  "extra": {
+    "retries": [
+      {
+        "uid": "test-011-retry-1",
+        "status": "failed",
+        "statusDetails": {
+          "message": "First attempt failed",
+          "trace": "AssertionError: Expected true but got false"
+        },
+        "time": {
+          "start": 1704067350000,
+          "stop": 1704067352000,
+          "duration": 2000
+        }
+      }
+    ]
+  }
+}
+EOF
+
+# Create categories.json for test categorization
+cat > "$OUTPUT_DIR/categories.json" << 'EOF'
+[
+  {
+    "name": "Product defects",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*"
+  },
+  {
+    "name": "Test defects",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*"
+  },
+  {
+    "name": "Skipped tests",
+    "matchedStatuses": ["skipped"],
+    "messageRegex": ".*"
+  }
+]
+EOF
+
+# Create environment.properties for build metadata
+cat > "$OUTPUT_DIR/environment.properties" << 'EOF'
+Browser=Chrome
+Browser.Version=120.0
+OS=Ubuntu
+OS.Version=22.04
+Stand=Test
+Node.Version=20.x
+Test.Framework=Custom Fixtures
+Allure.Version=3.0.1
+EOF
+
+echo "✅ Created 11 test fixtures, categories.json, and environment.properties in $OUTPUT_DIR"
 echo ""
-echo "Fixture summary:"
+echo "Test fixtures:"
 echo "  1. Simple passing test"
 echo "  2. Failing test with stack trace"
 echo "  3. Skipped test"
@@ -283,3 +379,8 @@ echo "  7. Broken test"
 echo "  8. Test with steps"
 echo "  9. Flaky test"
 echo " 10. Test with links"
+echo " 11. Flaky test with retries"
+echo ""
+echo "Configuration files:"
+echo "  - categories.json (test categorization)"
+echo "  - environment.properties (build metadata)"
