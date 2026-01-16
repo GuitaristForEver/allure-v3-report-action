@@ -1,0 +1,5 @@
+{
+  "historyPath": "allure-results/history",
+  "appendHistory": true,
+  "historyLimit": 20
+}
