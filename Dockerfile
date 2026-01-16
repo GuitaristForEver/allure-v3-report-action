@@ -8,6 +8,13 @@ WORKDIR $ROOT
 COPY package.json ./
 RUN npm install -g allure@$(node -p "require('./package.json').dependencies.allure")
 
+# Copy Allure configuration
+COPY allurerc.json /allurerc.json
+
+# Copy history bootstrap script
+COPY history-bootstrap.sh /history-bootstrap.sh
+RUN chmod +x /history-bootstrap.sh
+
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

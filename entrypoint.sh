@@ -80,12 +80,22 @@ mv executor.json "./${INPUT_ALLURE_RESULTS}/"
 
 # Copy previous history into results
 echo "📜 Restoring previous run history..."
-cp -r "./${INPUT_GH_PAGES}/last-history/." "./${INPUT_ALLURE_RESULTS}/history" 2>/dev/null || echo "No previous history found"
+if [ -d "./${INPUT_GH_PAGES}/last-history" ]; then
+    cp -r "./${INPUT_GH_PAGES}/last-history/." "./${INPUT_ALLURE_RESULTS}/history"
+    echo "✅ History restored from previous run"
+else
+    echo "ℹ️  No previous history found - creating bootstrap"
+    bash /history-bootstrap.sh "./${INPUT_ALLURE_RESULTS}"
+fi
+
+# Copy Allure configuration to enable history
+cp /allurerc.json ./allurerc.json
 
 # Generate Allure report
 echo "🎨 Generating Allure v3 report..."
 echo "   Results: ${INPUT_ALLURE_RESULTS}"
 echo "   Output:  ${INPUT_ALLURE_REPORT}"
+echo "   Config:  allurerc.json"
 
 # Clean output directory if it exists (Allure v3 doesn't support --clean flag)
 rm -rf "./${INPUT_ALLURE_REPORT}"
