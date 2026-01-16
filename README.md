@@ -1,6 +1,8 @@
 # Allure v3 Report Action 🎯
 
-[![Test Action](https://github.com/yuvalgabay/allure-v3-report-action/actions/workflows/test-local.yml/badge.svg)](https://github.com/yuvalgabay/allure-v3-report-action/actions/workflows/test-local.yml)
+[![Test Action](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/test-local.yml/badge.svg)](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/test-local.yml)
+[![PR Validation](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/pr-validation.yml)
+[![Release](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/release-please.yml/badge.svg)](https://github.com/GuitaristForEver/allure-v3-report-action/actions/workflows/release-please.yml)
 
 Generate beautiful Allure v3 test reports with history tracking in GitHub Actions.
 
